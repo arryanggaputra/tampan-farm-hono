@@ -2,5 +2,32 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ternaktampan",
   "compatibility_date": "2025-08-03",
-  "main": "./src/index.tsx"
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/index.tsx",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tampan-farm-db",
+      "database_id": "c30192a6-4fd8-4412-b6c7-a0b83fd92226",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "STORAGE",
+      "bucket_name": "tampan-farm-storage",
+      "preview_bucket_name": "tampan-farm-storage-dev"
+    }
+  ],
+
+  "vars": {
+    "JWT_SECRET": "change-in-production"
+  },
+
+  "assets": {
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
 }
