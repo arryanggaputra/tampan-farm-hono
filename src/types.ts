@@ -45,6 +45,7 @@ export interface Expense {
   description: string;
   cost: number;
   expense_date: string;
+  image_url: string | null;
   created_at: string;
 }
 

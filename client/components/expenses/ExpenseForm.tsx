@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useRef } from 'react'
 import { Dialog } from '../ui/Dialog'
 import { Button } from '../ui/Button'
 import { Input, Field } from '../ui/Input'
@@ -6,6 +6,7 @@ import { Select } from '../ui/Select'
 import { expensesApi } from '../../lib/api'
 import { useToast } from '../ui/Toast'
 import { todayISO } from '../../lib/utils'
+import { X, ImageIcon } from 'lucide-react'
 import type { Expense, ExpenseCategory } from '../../../src/types'
 
 interface Props {
@@ -18,24 +19,59 @@ interface Props {
 export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
   const toast = useToast()
   const [loading, setLoading] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [removePhoto, setRemovePhoto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string)
+        setRemovePhoto(false)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemovePhoto = () => {
+    setRemovePhoto(true)
+    setPhotoPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleClickPhoto = (url: string) => {
+    window.open(url, '_blank')
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
-    const form = new FormData(e.currentTarget)
-    const data = {
-      category: form.get('category') as ExpenseCategory,
-      description: form.get('description') as string,
-      cost: Number(form.get('cost')),
-      expense_date: form.get('expense_date') as string,
-    }
-
     try {
+      const form = new FormData(e.currentTarget)
       if (editing) {
-        await expensesApi.update(editing.id, data)
+        const body: Record<string, unknown> = {
+          category: form.get('category'),
+          description: form.get('description'),
+          cost: Number(form.get('cost')),
+          expense_date: form.get('expense_date'),
+        }
+        if (removePhoto) {
+          body.image_url = null
+        }
+        await expensesApi.update(editing.id, body as Partial<Expense>)
+        const photoFile = form.get('photo') as File
+        if (photoFile?.size > 0) {
+          const pf = new FormData()
+          pf.append('photo', photoFile)
+          await expensesApi.uploadPhoto(editing.id, pf)
+        }
         toast('Biaya berhasil diupdate')
       } else {
-        await expensesApi.create(data)
+        await expensesApi.create(form)
         toast('Biaya berhasil dicatat')
       }
       onSuccess()
@@ -83,6 +119,72 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
 
         <Field label="Tanggal" required>
           <Input name="expense_date" type="date" defaultValue={editing?.expense_date ?? todayISO()} required />
+        </Field>
+
+        <Field label="Foto Bukti">
+          <input
+            ref={fileInputRef}
+            name="photo"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className="text-sm text-gray-600 file:mr-3 file:rounded-md file:border-0 file:bg-green-600 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-green-700"
+          />
+          
+          {/* Preview for new photo */}
+          {photoPreview && (
+            <div className="relative mt-2 inline-block">
+              <img 
+                src={photoPreview} 
+                alt="Preview" 
+                className="h-24 w-24 rounded-lg object-cover cursor-pointer hover:opacity-90"
+                onClick={() => handleClickPhoto(photoPreview)}
+              />
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* Existing photo (when editing) */}
+          {editing?.image_url && !photoPreview && !removePhoto && (
+            <div className="relative mt-2 inline-block">
+              <img 
+                src={editing.image_url} 
+                alt="Foto bukti" 
+                className="h-24 w-24 rounded-lg object-cover cursor-pointer hover:opacity-90 border-2 border-gray-200"
+                onClick={() => handleClickPhoto(editing.image_url!)}
+                title="Klik untuk melihat ukuran penuh"
+              />
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                title="Hapus foto"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* Removed photo indicator */}
+          {removePhoto && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+              <ImageIcon size={16} />
+              <span>Foto akan dihapus</span>
+              <button
+                type="button"
+                onClick={() => setRemovePhoto(false)}
+                className="text-green-600 hover:underline text-xs"
+              >
+                Batalkan
+              </button>
+            </div>
+          )}
         </Field>
 
         <div className="flex justify-end gap-2 pt-2">

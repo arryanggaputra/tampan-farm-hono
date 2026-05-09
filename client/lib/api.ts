@@ -129,21 +129,33 @@ export const salesApi = {
 // Expenses
 export const expensesApi = {
   list: () => request<ApiResponse<Expense[]>>("/api/expenses"),
-  create: (data: {
-    category: ExpenseCategory;
-    description: string;
-    cost: number;
-    expense_date: string;
-  }) =>
-    request<ApiResponse<Expense>>("/api/expenses", {
+
+  create: (form: FormData) =>
+    fetch("/api/expenses", {
       method: "POST",
-      body: JSON.stringify(data),
+      credentials: "include",
+      body: form,
+    }).then(async (r) => {
+      if (!r.ok) throw new Error((await r.json<{ error: string }>()).error);
+      return r.json<ApiResponse<Expense>>();
     }),
+
   update: (id: string, data: Partial<Expense>) =>
     request<ApiResponse<Expense>>(`/api/expenses/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+
+  uploadPhoto: (id: string, form: FormData) =>
+    fetch(`/api/expenses/${id}/photo`, {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    }).then(async (r) => {
+      if (!r.ok) throw new Error((await r.json<{ error: string }>()).error);
+      return r.json<ApiResponse<{ image_url: string }>>();
+    }),
+
   delete: (id: string) =>
     request<ApiResponse<{ ok: boolean }>>(`/api/expenses/${id}`, {
       method: "DELETE",
