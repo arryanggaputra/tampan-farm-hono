@@ -9,13 +9,18 @@ import { useToast } from '../components/ui/Toast'
 import { formatRupiah, formatDate } from '../lib/utils'
 import type { Expense, ExpenseCategory } from '../../src/types'
 
-const CATEGORY_CONFIG: Record<ExpenseCategory, { label: string; variant: 'green' | 'yellow' | 'blue' | 'red' | 'default' }> = {
+const CATEGORY_CONFIG: Record<string, { label: string; variant: 'green' | 'yellow' | 'blue' | 'red' | 'default' }> = {
   kandang: { label: 'Kandang', variant: 'blue' },
   pakan: { label: 'Pakan', variant: 'green' },
   obat: { label: 'Obat', variant: 'red' },
   upah: { label: 'Upah', variant: 'yellow' },
+  infrastruktur: { label: 'Infrastruktur', variant: 'blue' },
+  kesehatan: { label: 'Kesehatan', variant: 'red' },
+  operasional: { label: 'Operasional', variant: 'yellow' },
   lainnya: { label: 'Lainnya', variant: 'default' },
 }
+
+const FALLBACK_CONFIG = { label: 'Lainnya', variant: 'default' as const }
 
 export function ExpensesPage() {
   const qc = useQueryClient()
@@ -78,7 +83,7 @@ export function ExpensesPage() {
       ) : (
         <div className="space-y-2">
           {data?.map((expense) => {
-            const cat = CATEGORY_CONFIG[expense.category]
+            const cat = CATEGORY_CONFIG[expense.category.toLowerCase()] ?? FALLBACK_CONFIG
             return (
               <div
                 key={expense.id}
