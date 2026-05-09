@@ -1,12 +1,12 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
-import { Sidebar } from './Sidebar'
-import { useAuth } from '../../context/AuthContext'
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+import { Sidebar } from "./Sidebar";
+import { useAuth } from "../../context/AuthContext";
 
 export function AppShell() {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const { user } = useAuth()
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -39,7 +39,9 @@ export function AppShell() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+          <span className="hidden sm:inline text-sm font-medium text-gray-700">
+            {user?.name}
+          </span>
           <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
@@ -47,11 +49,11 @@ export function AppShell() {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-6xl p-4 sm:p-6">
+          <div className="mx-auto max-w-6xl p-3 sm:p-4 md:p-6">
             <Outlet />
           </div>
         </main>
       </div>
     </div>
-  )
+  );
 }

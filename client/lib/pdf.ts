@@ -21,7 +21,7 @@ export function generateReceipt(
   doc.text("Peternakan Kambing & Domba Premium", W / 2, 20, {
     align: "center",
   });
-  doc.text("Hubungi: arry@swipey.co", W / 2, 26, { align: "center" });
+  doc.text("Hubungi: arry@peternaktampan.com", W / 2, 26, { align: "center" });
 
   y = 40;
   doc.setTextColor(0, 0, 0);
