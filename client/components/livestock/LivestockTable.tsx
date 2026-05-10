@@ -5,6 +5,7 @@ import {
   MoreHorizontal,
   Trash2,
   Image,
+  RotateCcw,
 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Button } from "../ui/Button";
@@ -40,6 +41,16 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
       toast((err as Error).message, "error");
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleResetSold = async (item: Livestock) => {
+    try {
+      await livestockApi.updateStatus(item.id, 'available');
+      toast("Status berhasil direset ke Tersedia");
+      onRefresh();
+    } catch (err) {
+      toast((err as Error).message, "error");
     }
   };
 
@@ -123,7 +134,16 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
                 </td>
                 <td className="px-4 py-3">
                   {item.status === 'sold' ? (
-                    <StatusBadge status="sold" />
+                    <div className="flex items-center gap-1.5">
+                      <StatusBadge status="sold" />
+                      <button
+                        onClick={() => handleResetSold(item)}
+                        title="Reset ke Tersedia (jika tidak ada data penjualan)"
+                        className="text-gray-400 hover:text-orange-500 transition-colors"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   ) : (
                     <Select
                       value={item.status}
@@ -229,8 +249,15 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
 
             <div className="flex items-center gap-2">
               {item.status === 'sold' ? (
-                <div className="flex-1">
+                <div className="flex-1 flex items-center gap-2">
                   <StatusBadge status="sold" />
+                  <button
+                    onClick={() => handleResetSold(item)}
+                    title="Reset ke Tersedia (jika tidak ada data penjualan)"
+                    className="text-gray-400 hover:text-orange-500 transition-colors"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               ) : (
                 <Select

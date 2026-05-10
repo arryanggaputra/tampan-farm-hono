@@ -138,12 +138,24 @@ livestock.patch('/:id/status', async (c) => {
     return c.json({ error: 'Untuk menjual hewan, gunakan endpoint penjualan (/api/sales)' }, 400)
   }
 
+  const current = await c.env.DB.prepare('SELECT status FROM livestock WHERE id = ?')
+    .bind(id).first<{ status: string }>()
+  if (!current) return c.json({ error: 'Not found' }, 404)
+
+  if (current.status === 'sold') {
+    const linkedSale = await c.env.DB.prepare(
+      'SELECT id FROM sales WHERE livestock_id = ? LIMIT 1'
+    ).bind(id).first()
+    if (linkedSale) {
+      return c.json({ error: 'Status tidak bisa diubah karena hewan ini sudah memiliki catatan penjualan.' }, 400)
+    }
+  }
+
   await c.env.DB.prepare(
     "UPDATE livestock SET status = ?, updated_at = datetime('now') WHERE id = ?"
   ).bind(status, id).run()
 
   const item = await c.env.DB.prepare('SELECT * FROM livestock WHERE id = ?').bind(id).first()
-  if (!item) return c.json({ error: 'Not found' }, 404)
   return c.json({ data: item })
 })
 
