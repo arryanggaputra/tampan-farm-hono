@@ -25,10 +25,15 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
   const toast = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const handleStatusChange = async (id: string, status: LivestockStatus) => {
-    setUpdatingId(id);
+  const handleStatusChange = async (item: Livestock, status: LivestockStatus) => {
+    if (status === 'sold') {
+      // Must go through QuickSellDialog so a sale record is always created
+      onSell(item)
+      return
+    }
+    setUpdatingId(item.id);
     try {
-      await livestockApi.updateStatus(id, status);
+      await livestockApi.updateStatus(item.id, status);
       toast("Status berhasil diupdate");
       onRefresh();
     } catch (err) {
@@ -117,22 +122,23 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
                   {item.vendor ?? "-"}
                 </td>
                 <td className="px-4 py-3">
-                  <Select
-                    value={item.status}
-                    onChange={(e) =>
-                      handleStatusChange(
-                        item.id,
-                        e.target.value as LivestockStatus
-                      )
-                    }
-                    disabled={updatingId === item.id || item.status === "sold"}
-                    className="w-32 text-xs h-7"
-                  >
-                    <option value="available">Tersedia</option>
-                    <option value="booking">Booking/DP</option>
-                    <option value="sold">Terjual</option>
-                    <option value="dead">Mati</option>
-                  </Select>
+                  {item.status === 'sold' ? (
+                    <StatusBadge status="sold" />
+                  ) : (
+                    <Select
+                      value={item.status}
+                      onChange={(e) =>
+                        handleStatusChange(item, e.target.value as LivestockStatus)
+                      }
+                      disabled={updatingId === item.id}
+                      className="w-32 text-xs h-7"
+                    >
+                      <option value="available">Tersedia</option>
+                      <option value="booking">Booking/DP</option>
+                      <option value="sold">Terjual (Jual →)</option>
+                      <option value="dead">Mati</option>
+                    </Select>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
@@ -222,19 +228,25 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
             </div>
 
             <div className="flex items-center gap-2">
-              <Select
-                value={item.status}
-                onChange={(e) =>
-                  handleStatusChange(item.id, e.target.value as LivestockStatus)
-                }
-                disabled={updatingId === item.id || item.status === "sold"}
-                className="flex-1 text-xs h-8"
-              >
-                <option value="available">Tersedia</option>
-                <option value="booking">Booking/DP</option>
-                <option value="sold">Terjual</option>
-                <option value="dead">Mati</option>
-              </Select>
+              {item.status === 'sold' ? (
+                <div className="flex-1">
+                  <StatusBadge status="sold" />
+                </div>
+              ) : (
+                <Select
+                  value={item.status}
+                  onChange={(e) =>
+                    handleStatusChange(item, e.target.value as LivestockStatus)
+                  }
+                  disabled={updatingId === item.id}
+                  className="flex-1 text-xs h-8"
+                >
+                  <option value="available">Tersedia</option>
+                  <option value="booking">Booking/DP</option>
+                  <option value="sold">Terjual (Jual →)</option>
+                  <option value="dead">Mati</option>
+                </Select>
+              )}
             </div>
 
             <div className="flex gap-2 pt-2 border-t border-gray-100">

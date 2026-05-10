@@ -133,9 +133,9 @@ livestock.patch('/:id/status', async (c) => {
   const id = c.req.param('id')
   const { status } = await c.req.json<{ status: string }>()
 
-  const valid = ['available', 'sold', 'booking', 'dead']
+  const valid = ['available', 'booking', 'dead']
   if (!valid.includes(status)) {
-    return c.json({ error: 'Invalid status' }, 400)
+    return c.json({ error: 'Untuk menjual hewan, gunakan endpoint penjualan (/api/sales)' }, 400)
   }
 
   await c.env.DB.prepare(
