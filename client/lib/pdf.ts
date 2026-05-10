@@ -10,18 +10,26 @@ export function generateReceipt(
   let y = 15;
 
   // Header
-  doc.setFillColor(22, 163, 74);
+  doc.setFillColor(255, 250, 231);
   doc.rect(0, 0, W, 30, "F");
-  doc.setTextColor(255, 255, 255);
+
+  // Add logo in header
+  const logoWidth = 20;
+  const logoHeight = 20;
+  const logoX = 15;
+  const logoY = 5;
+  doc.addImage("/logo.png", "PNG", logoX, logoY, logoWidth, logoHeight);
+
+  doc.setTextColor(58, 74, 23);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.text("Peternak Tampan", W / 2, 13, { align: "center" });
+  doc.text("PeternakTampan.com", W / 2, 13, { align: "center" });
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text("Peternakan Kambing & Domba Premium", W / 2, 20, {
     align: "center",
   });
-  doc.text("Hubungi: arry@peternaktampan.com", W / 2, 26, { align: "center" });
+  doc.text("Hubungi: admin@peternaktampan.com", W / 2, 26, { align: "center" });
 
   y = 40;
   doc.setTextColor(0, 0, 0);
@@ -75,7 +83,7 @@ export function generateReceipt(
     : sale.livestock_type;
   doc.text(`Hewan   : ${animalName}`, 18, y + 2);
   if (sale.livestock_weight_kg) {
-    doc.text(`Berat   : ${sale.livestock_weight_kg} kg`, 18, y + 8);
+    doc.text(`Berat   : ± ${sale.livestock_weight_kg} kg`, 18, y + 8);
   }
   y += 24;
 
@@ -128,25 +136,8 @@ export function generateReceipt(
   doc.text(statusLabel, W / 2, y + 1.5, { align: "center" });
   y += 18;
 
-  // Signature
-  doc.setTextColor(0, 0, 0);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text("Hormat kami,", W - 15 - 30, y, { align: "center" });
-  y += 5;
-
-  // Add logo
-  const logoWidth = 20;
-  const logoHeight = 20;
-  const logoX = W - 15 - 30 - logoWidth / 2;
-  doc.addImage("/logo.png", "PNG", logoX, y, logoWidth, logoHeight);
-  y += logoHeight + 5;
-
-  doc.line(W - 15 - 50, y, W - 15, y);
-  y += 5;
-
   // Footer
-  y += 15;
+  y += 10;
   doc.setDrawColor(200, 200, 200);
   doc.line(15, y, W - 15, y);
   y += 6;
