@@ -197,6 +197,16 @@ livestock.delete('/:id', async (c) => {
     return c.json({ error: 'Hanya hewan dengan status Tersedia atau Mati yang bisa dihapus' }, 400)
   }
 
+  const linkedSale = await c.env.DB.prepare(
+    'SELECT id FROM sales WHERE livestock_id = ? LIMIT 1'
+  ).bind(id).first<{ id: string }>()
+
+  if (linkedSale) {
+    return c.json({
+      error: 'Hewan ini memiliki catatan penjualan. Hapus transaksi penjualannya terlebih dahulu.'
+    }, 400)
+  }
+
   await c.env.DB.prepare('DELETE FROM livestock WHERE id = ?').bind(id).run()
   return c.json({ data: { ok: true } })
 })
