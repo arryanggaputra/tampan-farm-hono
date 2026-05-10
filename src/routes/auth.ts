@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import { SignJWT } from 'jose'
-import { verifyPassword } from '../lib/password'
+import { verifyPassword, hashPassword } from '../lib/password'
 import { authMiddleware } from '../middleware/auth'
 
 type Bindings = CloudflareBindings
@@ -52,6 +52,33 @@ auth.post('/logout', (c) => {
 auth.get('/me', authMiddleware, (c) => {
   const user = c.get('user')
   return c.json({ data: { id: user.sub, name: user.name, email: user.email } })
+})
+
+auth.post('/change-password', authMiddleware, async (c) => {
+  const { currentPassword, newPassword } = await c.req.json<{
+    currentPassword: string
+    newPassword: string
+  }>()
+
+  const userId = c.get('user').sub
+  const row = await c.env.DB.prepare(
+    'SELECT password_hash FROM users WHERE id = ?'
+  ).bind(userId).first<{ password_hash: string }>()
+
+  if (!row || !(await verifyPassword(currentPassword, row.password_hash))) {
+    return c.json({ error: 'Password lama tidak sesuai' }, 400)
+  }
+
+  if (!newPassword || newPassword.length < 8) {
+    return c.json({ error: 'Password baru minimal 8 karakter' }, 400)
+  }
+
+  const newHash = await hashPassword(newPassword)
+  await c.env.DB.prepare(
+    'UPDATE users SET password_hash = ? WHERE id = ?'
+  ).bind(newHash, userId).run()
+
+  return c.json({ data: { ok: true } })
 })
 
 export default auth

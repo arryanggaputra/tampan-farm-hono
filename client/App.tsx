@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LivestockPage } from './pages/LivestockPage'
 import { SalesPage } from './pages/SalesPage'
 import { ExpensesPage } from './pages/ExpensesPage'
+import { UsersPage } from './pages/UsersPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +52,7 @@ export default function App() {
                 <Route path="livestock" element={<LivestockPage />} />
                 <Route path="sales" element={<SalesPage />} />
                 <Route path="expenses" element={<ExpensesPage />} />
+                <Route path="users" element={<UsersPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
             </Routes>

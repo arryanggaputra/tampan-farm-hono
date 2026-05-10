@@ -43,6 +43,23 @@ export const authApi = {
       method: "POST",
     }),
   me: () => request<ApiResponse<User>>("/api/auth/me"),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<ApiResponse<{ ok: boolean }>>("/api/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+};
+
+// Users
+export const usersApi = {
+  list: () => request<ApiResponse<{ id: string; name: string; email: string; created_at: string }[]>>("/api/users"),
+  create: (data: { name: string; email: string; password: string }) =>
+    request<ApiResponse<{ id: string; name: string; email: string }>>("/api/users", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  delete: (id: string) =>
+    request<ApiResponse<{ ok: boolean }>>(`/api/users/${id}`, { method: "DELETE" }),
 };
 
 // Dashboard

@@ -4,6 +4,7 @@ import {
   Beef,
   ShoppingCart,
   Receipt,
+  Users,
   LogOut,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -14,6 +15,7 @@ const nav = [
   { to: "/admin/livestock", icon: Beef, label: "Inventaris Hewan" },
   { to: "/admin/sales", icon: ShoppingCart, label: "Penjualan" },
   { to: "/admin/expenses", icon: Receipt, label: "Biaya Operasional" },
+  { to: "/admin/users", icon: Users, label: "Manajemen User" },
 ];
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {

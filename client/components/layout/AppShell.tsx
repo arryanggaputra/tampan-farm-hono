@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, KeyRound, LogOut } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { useAuth } from "../../context/AuthContext";
+import { ChangePasswordDialog } from "../auth/ChangePasswordDialog";
 
 export function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -42,10 +56,38 @@ export function AppShell() {
           <span className="hidden sm:inline text-sm font-medium text-gray-700">
             {user?.name}
           </span>
-          <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold">
-            {user?.name?.charAt(0).toUpperCase()}
+          <div ref={dropdownRef} className="relative">
+            <button
+              onClick={() => setDropdownOpen((o) => !o)}
+              className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold hover:bg-green-700 transition-colors"
+            >
+              {user?.name?.charAt(0).toUpperCase()}
+            </button>
+            {dropdownOpen && (
+              <div className="absolute right-0 top-10 z-50 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1">
+                <button
+                  onClick={() => { setDropdownOpen(false); setChangePasswordOpen(true); }}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  <KeyRound className="h-4 w-4 text-gray-400" />
+                  Ganti Password
+                </button>
+                <button
+                  onClick={() => { setDropdownOpen(false); logout(); }}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-gray-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Keluar
+                </button>
+              </div>
+            )}
           </div>
         </header>
+
+        <ChangePasswordDialog
+          open={changePasswordOpen}
+          onClose={() => setChangePasswordOpen(false)}
+        />
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
