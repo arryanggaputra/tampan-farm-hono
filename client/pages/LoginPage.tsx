@@ -40,7 +40,7 @@ export function LoginPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-600 shadow-lg">
             <Beef className="h-9 w-9 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Tampan Farm</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Peternak Tampan</h1>
           <p className="mt-1 text-sm text-gray-500">
             Ops Tracker — Masuk ke akun Anda
           </p>

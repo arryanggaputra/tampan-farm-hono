@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Production deployment script for Tampan Farm
+# Production deployment script for Peternak Tampan
 # This script applies database migrations and deploys the application to Cloudflare Workers
 
 set -e  # Exit on error

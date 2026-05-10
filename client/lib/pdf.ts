@@ -15,7 +15,7 @@ export function generateReceipt(
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.text("TAMPAN FARM", W / 2, 13, { align: "center" });
+  doc.text("Peternak Tampan", W / 2, 13, { align: "center" });
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text("Peternakan Kambing & Domba Premium", W / 2, 20, {
@@ -133,10 +133,17 @@ export function generateReceipt(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.text("Hormat kami,", W - 15 - 30, y, { align: "center" });
-  y += 20;
+  y += 5;
+
+  // Add logo
+  const logoWidth = 20;
+  const logoHeight = 20;
+  const logoX = W - 15 - 30 - logoWidth / 2;
+  doc.addImage("/logo.png", "PNG", logoX, y, logoWidth, logoHeight);
+  y += logoHeight + 5;
+
   doc.line(W - 15 - 50, y, W - 15, y);
   y += 5;
-  doc.text("Tampan Farm", W - 15 - 30, y, { align: "center" });
 
   // Footer
   y += 15;
@@ -145,9 +152,14 @@ export function generateReceipt(
   y += 6;
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
-  doc.text("Terima kasih atas kepercayaan Anda kepada Tampan Farm.", W / 2, y, {
-    align: "center",
-  });
+  doc.text(
+    "Terima kasih atas kepercayaan Anda kepada Peternak Tampan.",
+    W / 2,
+    y,
+    {
+      align: "center",
+    }
+  );
   doc.text("Semoga hewan yang dibeli membawa keberkahan.", W / 2, y + 5, {
     align: "center",
   });
