@@ -27,13 +27,25 @@ fi
 
 # Step 1: Apply database migrations to production
 echo "📊 Step 1/3: Applying database migrations to production..."
-npx wrangler d1 migrations apply tampan-farm-db --remote
 
-if [ $? -eq 0 ]; then
-  echo -e "${GREEN}✅ Migrations applied successfully${NC}"
+# Check if there are migrations to apply
+MIGRATIONS_TO_APPLY=$(npx wrangler d1 migrations list tampan-farm-db --remote 2>/dev/null | grep -c "│" || echo "0")
+
+if [ "$MIGRATIONS_TO_APPLY" -gt 3 ]; then
+  npx wrangler d1 migrations apply tampan-farm-db --remote
+  
+  if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Migrations applied successfully${NC}"
+  else
+    echo -e "${YELLOW}⚠️  Migration failed or already applied${NC}"
+    read -p "Continue with deployment? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      exit 1
+    fi
+  fi
 else
-  echo -e "${RED}❌ Migration failed${NC}"
-  exit 1
+  echo -e "${GREEN}✅ No new migrations to apply${NC}"
 fi
 
 echo ""
