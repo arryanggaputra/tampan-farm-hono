@@ -71,6 +71,15 @@ export function DashboardPage() {
       bg: "bg-purple-50",
       sub: "Status: Tersedia di kandang",
     },
+    {
+      title: "Untung dari Penjualan",
+      value: formatRupiah(Math.abs(data?.keuntunganKotorTerjual ?? 0)),
+      icon: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? TrendingUp : TrendingDown,
+      color: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "text-emerald-600" : "text-red-600",
+      bg: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "bg-emerald-50" : "bg-red-50",
+      sub: `Dari ${data?.jumlahTerjual ?? 0} ekor terjual · harga jual − harga beli`,
+      valueColor: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "text-emerald-700" : "text-red-700",
+    },
   ];
 
   return (
@@ -82,7 +91,7 @@ export function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {stats.map(
           ({ title, value, icon: Icon, color, bg, sub, valueColor }) => (
             <Card key={title}>
@@ -118,8 +127,10 @@ export function DashboardPage() {
           </h2>
           <ul className="space-y-1.5 text-sm text-gray-500">
             <li>
-              • Profit/loss dihitung dari: Penjualan − Modal Hewan − Biaya
-              Operasional
+              • Profit/loss dihitung dari: Penjualan − Modal Hewan (semua) − Biaya Operasional
+            </li>
+            <li>
+              • <strong>Untung Penjualan</strong> = harga jual − harga beli, hanya untuk hewan yang sudah terjual
             </li>
             <li>
               • Hanya pembayaran yang sudah diterima (DP + Lunas) yang masuk
