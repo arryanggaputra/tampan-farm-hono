@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react'
 
-async function resizeImage(file: File, maxPx = 1024, quality = 0.85): Promise<File> {
+async function resizeImage(file: File, maxPx = 600, quality = 0.85): Promise<File> {
   return new Promise((resolve) => {
     const img = new Image()
     const url = URL.createObjectURL(file)
