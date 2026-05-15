@@ -17,23 +17,33 @@ app.route("/api/auth", authRoutes);
 
 // Public photo endpoint — must be before auth-protected livestock routes
 app.get("/api/livestock/:id/photo", async (c) => {
-  const id = c.req.param("id");
-  const list = await c.env.STORAGE.list({ prefix: `livestock/${id}/` });
-  if (!list.objects.length) return c.json({ error: "No photo" }, 404);
-  const latest = list.objects.sort(
-    (a, b) => b.uploaded.getTime() - a.uploaded.getTime()
-  )[0];
-  const etag = `"${latest.etag}"`;
-  if (c.req.header("if-none-match") === etag) {
-    return new Response(null, { status: 304 });
+  const via = c.req.header("via") ?? "";
+
+  // Inner subrequest from CF Image Resizing — serve raw from R2
+  if (/image-resizing/.test(via)) {
+    const id = c.req.param("id");
+    const list = await c.env.STORAGE.list({ prefix: `livestock/${id}/` });
+    if (!list.objects.length) return c.json({ error: "No photo" }, 404);
+    const latest = list.objects.sort(
+      (a, b) => b.uploaded.getTime() - a.uploaded.getTime()
+    )[0];
+    const obj = await c.env.STORAGE.get(latest.key);
+    if (!obj) return c.json({ error: "Not found" }, 404);
+    return new Response(obj.body, {
+      headers: { "Content-Type": obj.httpMetadata?.contentType ?? "image/jpeg" },
+    });
   }
-  const obj = await c.env.STORAGE.get(latest.key);
-  if (!obj) return c.json({ error: "Not found" }, 404);
-  return new Response(obj.body, {
+
+  // Outer request — resize via CF Image Resizing, CF auto-caches the result
+  const resized = await fetch(c.req.url, {
+    cf: { image: { width: 600, quality: 85, format: "webp" } },
+  } as RequestInit);
+
+  return new Response(resized.body, {
+    status: resized.status,
     headers: {
-      "Content-Type": obj.httpMetadata?.contentType ?? "image/jpeg",
+      "Content-Type": resized.headers.get("Content-Type") ?? "image/webp",
       "Cache-Control": "public, max-age=31536000, immutable",
-      "ETag": etag,
     },
   });
 });
