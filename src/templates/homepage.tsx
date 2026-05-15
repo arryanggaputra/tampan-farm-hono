@@ -97,6 +97,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; m
 .badge { font-size: 0.62rem; font-weight: 700; color: white; padding: 2px 7px; border-radius: 999px; }
 .weight { font-size: 0.7rem; color: #94a3b8; font-weight: 500; }
 .card-price { font-size: 0.72rem; font-weight: 700; color: #15803d; }
+.card-order { display: block; width: 100%; margin-top: 8px; padding: 7px 0; border-radius: 8px; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; background: #16a34a; color: white; transition: background .15s; }
+.card-order:hover { background: #15803d; }
+.card-order.disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; pointer-events: none; }
 
 .empty { text-align: center; padding: 64px 24px; color: #94a3b8; grid-column: 1 / -1; }
 .card.hidden { display: none; }
@@ -166,6 +169,18 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         {l.selling_price ? (
           <div class="card-price">{formatRupiah(l.selling_price)}</div>
         ) : null}
+        {l.status === 'available' || l.status === 'booking' ? (
+          <a
+            class="card-order"
+            href={`https://wa.me/6281931520239?text=Halo%2C+saya+tertarik+dengan+${encodeURIComponent(l.name ?? l.type)}+%23${pad(index + 1)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pesan Sekarang
+          </a>
+        ) : (
+          <span class="card-order disabled">Tidak Tersedia</span>
+        )}
       </div>
     </div>
   );
