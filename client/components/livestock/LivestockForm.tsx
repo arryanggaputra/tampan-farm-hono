@@ -30,6 +30,7 @@ export function LivestockForm({ open, onClose, onSuccess, editing }: Props) {
           type: form.get('type'),
           weight_kg: form.get('weight_kg') ? Number(form.get('weight_kg')) : null,
           purchase_price: Number(form.get('purchase_price')),
+          selling_price: form.get('selling_price') ? Number(form.get('selling_price')) : null,
           purchase_date: form.get('purchase_date'),
           vendor: form.get('vendor') || null,
           notes: form.get('notes') || null,
@@ -94,6 +95,16 @@ export function LivestockForm({ open, onClose, onSuccess, editing }: Props) {
             />
           </Field>
         </div>
+
+        <Field label="Harga Jual (Rp)">
+          <Input
+            name="selling_price"
+            type="number"
+            min="0"
+            defaultValue={editing?.selling_price ?? ''}
+            placeholder="5000000"
+          />
+        </Field>
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tanggal Beli" required>

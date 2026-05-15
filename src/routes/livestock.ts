@@ -40,6 +40,7 @@ livestock.post('/', async (c) => {
 
   let name: string | null = null
   let type: string, weightKg: number | null = null, purchasePrice: number
+  let sellingPrice: number | null = null
   let purchaseDate: string, vendor: string | null = null
   let notes: string | null = null
   let imageFile: File | null = null
@@ -51,6 +52,8 @@ livestock.post('/', async (c) => {
     const wKg = form.get('weight_kg')
     weightKg = wKg ? Number(wKg) : null
     purchasePrice = Number(form.get('purchase_price'))
+    const sPrice = form.get('selling_price')
+    sellingPrice = sPrice ? Number(sPrice) : null
     purchaseDate = form.get('purchase_date') as string
     vendor = form.get('vendor') as string | null
     notes = form.get('notes') as string | null
@@ -58,12 +61,13 @@ livestock.post('/', async (c) => {
   } else {
     const body = await c.req.json<{
       name?: string; type: string; weight_kg?: number; purchase_price: number
-      purchase_date: string; vendor?: string; notes?: string
+      selling_price?: number; purchase_date: string; vendor?: string; notes?: string
     }>()
     name = body.name ?? null
     type = body.type
     weightKg = body.weight_kg ?? null
     purchasePrice = body.purchase_price
+    sellingPrice = body.selling_price ?? null
     purchaseDate = body.purchase_date
     vendor = body.vendor ?? null
     notes = body.notes ?? null
@@ -86,9 +90,9 @@ livestock.post('/', async (c) => {
   }
 
   await c.env.DB.prepare(
-    `INSERT INTO livestock (id, name, type, weight_kg, purchase_price, purchase_date, vendor, status, image_url, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'available', ?, ?)`
-  ).bind(id, name, type, weightKg, purchasePrice, purchaseDate, vendor, imageUrl, notes).run()
+    `INSERT INTO livestock (id, name, type, weight_kg, purchase_price, selling_price, purchase_date, vendor, status, image_url, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'available', ?, ?)`
+  ).bind(id, name, type, weightKg, purchasePrice, sellingPrice, purchaseDate, vendor, imageUrl, notes).run()
 
   const item = await c.env.DB.prepare('SELECT * FROM livestock WHERE id = ?').bind(id).first()
   return c.json({ data: item }, 201)
@@ -101,7 +105,7 @@ livestock.patch('/:id', async (c) => {
 
   const body = await c.req.json<Partial<{
     name: string; type: string; weight_kg: number; purchase_price: number
-    purchase_date: string; vendor: string; notes: string; status: string
+    selling_price: number; purchase_date: string; vendor: string; notes: string; status: string
   }>>()
 
   const fields: string[] = []
@@ -111,6 +115,7 @@ livestock.patch('/:id', async (c) => {
   if (body.type !== undefined) { fields.push('type = ?'); values.push(body.type) }
   if (body.weight_kg !== undefined) { fields.push('weight_kg = ?'); values.push(body.weight_kg) }
   if (body.purchase_price !== undefined) { fields.push('purchase_price = ?'); values.push(body.purchase_price) }
+  if (body.selling_price !== undefined) { fields.push('selling_price = ?'); values.push(body.selling_price) }
   if (body.purchase_date !== undefined) { fields.push('purchase_date = ?'); values.push(body.purchase_date) }
   if (body.vendor !== undefined) { fields.push('vendor = ?'); values.push(body.vendor) }
   if (body.notes !== undefined) { fields.push('notes = ?'); values.push(body.notes) }

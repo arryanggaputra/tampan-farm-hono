@@ -15,6 +15,7 @@ export interface Livestock {
   type: LivestockType;
   weight_kg: number | null;
   purchase_price: number;
+  selling_price: number | null;
   purchase_date: string;
   vendor: string | null;
   status: LivestockStatus;

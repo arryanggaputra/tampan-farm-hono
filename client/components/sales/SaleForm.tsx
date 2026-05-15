@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, FormEvent, useEffect, ChangeEvent } from 'react'
 import { Dialog } from '../ui/Dialog'
 import { Button } from '../ui/Button'
 import { Input, Field } from '../ui/Input'
@@ -19,6 +19,13 @@ export function SaleForm({ open, onClose, onSuccess, editing }: Props) {
   const toast = useToast()
   const [loading, setLoading] = useState(false)
   const [livestock, setLivestock] = useState<Livestock[]>([])
+  const [sellingPrice, setSellingPrice] = useState(editing?.selling_price?.toString() ?? '')
+  const [amountPaid, setAmountPaid] = useState(editing?.amount_paid?.toString() ?? '')
+
+  useEffect(() => {
+    setSellingPrice(editing?.selling_price?.toString() ?? '')
+    setAmountPaid(editing?.amount_paid?.toString() ?? '')
+  }, [editing])
 
   useEffect(() => {
     if (open && !editing) {
@@ -27,6 +34,17 @@ export function SaleForm({ open, onClose, onSuccess, editing }: Props) {
       })
     }
   }, [open, editing])
+
+  const handleLivestockChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const found = livestock.find((l) => l.id === e.target.value)
+    if (found?.selling_price != null) {
+      setSellingPrice(found.selling_price.toString())
+      setAmountPaid(found.selling_price.toString())
+    } else {
+      setSellingPrice('')
+      setAmountPaid('')
+    }
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -74,13 +92,13 @@ export function SaleForm({ open, onClose, onSuccess, editing }: Props) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {!editing && (
           <Field label="Hewan" required>
-            <Select name="livestock_id" required>
+            <Select name="livestock_id" required onChange={handleLivestockChange}>
               <option value="">-- Pilih Hewan --</option>
               {livestock.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name ? `${a.name} (${a.type})` : a.type}
                   {a.weight_kg ? ` — ${a.weight_kg}kg` : ''}
-                  {` — ${formatRupiah(a.purchase_price)}`}
+                  {a.selling_price ? ` — ${formatRupiah(a.selling_price)}` : ''}
                 </option>
               ))}
             </Select>
@@ -97,7 +115,8 @@ export function SaleForm({ open, onClose, onSuccess, editing }: Props) {
               name="selling_price"
               type="number"
               min="0"
-              defaultValue={editing?.selling_price ?? ''}
+              value={sellingPrice}
+              onChange={(e) => setSellingPrice(e.target.value)}
               placeholder="5000000"
               required
             />
@@ -107,7 +126,8 @@ export function SaleForm({ open, onClose, onSuccess, editing }: Props) {
               name="amount_paid"
               type="number"
               min="0"
-              defaultValue={editing?.amount_paid ?? ''}
+              value={amountPaid}
+              onChange={(e) => setAmountPaid(e.target.value)}
               placeholder="5000000"
               required
             />
