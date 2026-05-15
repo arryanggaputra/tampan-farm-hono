@@ -1,4 +1,23 @@
 import { useState, FormEvent } from 'react'
+
+async function resizeImage(file: File, maxPx = 1024, quality = 0.85): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const scale = Math.min(1, maxPx / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob((blob) => {
+        resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+      }, 'image/jpeg', quality)
+    }
+    img.src = url
+  })
+}
 import { Dialog } from '../ui/Dialog'
 import { Button } from '../ui/Button'
 import { Input, Field } from '../ui/Input'
@@ -38,12 +57,17 @@ export function LivestockForm({ open, onClose, onSuccess, editing }: Props) {
         await livestockApi.update(editing.id, body as Partial<Livestock>)
         const photoFile = form.get('photo') as File
         if (photoFile?.size > 0) {
+          const resized = await resizeImage(photoFile)
           const pf = new FormData()
-          pf.append('photo', photoFile)
+          pf.append('photo', resized)
           await livestockApi.uploadPhoto(editing.id, pf)
         }
         toast('Hewan berhasil diupdate')
       } else {
+        const rawPhoto = form.get('photo') as File
+        if (rawPhoto?.size > 0) {
+          form.set('photo', await resizeImage(rawPhoto))
+        }
         await livestockApi.create(form)
         toast('Hewan berhasil ditambahkan')
       }

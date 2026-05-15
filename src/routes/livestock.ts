@@ -194,13 +194,19 @@ livestock.get('/:id/photo', async (c) => {
   if (!list.objects.length) return c.json({ error: 'No photo found' }, 404)
 
   const latest = list.objects.sort((a, b) => b.uploaded.getTime() - a.uploaded.getTime())[0]
+  const etag = `"${latest.etag}"`
+  if (c.req.header('if-none-match') === etag) {
+    return new Response(null, { status: 304 })
+  }
+
   const obj = await c.env.STORAGE.get(latest.key)
   if (!obj) return c.json({ error: 'Photo not found' }, 404)
 
   return new Response(obj.body, {
     headers: {
       'Content-Type': obj.httpMetadata?.contentType ?? 'image/jpeg',
-      'Cache-Control': 'public, max-age=86400',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'ETag': etag,
     },
   })
 })
