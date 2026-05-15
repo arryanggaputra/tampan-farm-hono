@@ -14,13 +14,8 @@ const app = new Hono<{ Bindings: CloudflareBindings }>();
 app.use("/api/*", cors({ origin: "*", credentials: true }));
 
 app.route("/api/auth", authRoutes);
-app.route("/api/livestock", livestockRoutes);
-app.route("/api/sales", salesRoutes);
-app.route("/api/expenses", expensesRoutes);
-app.route("/api/dashboard", dashboardRoutes);
-app.route("/api/users", usersRoutes);
 
-// Public photo endpoint — no auth, must be before the auth-protected livestock routes
+// Public photo endpoint — must be before auth-protected livestock routes
 app.get("/api/livestock/:id/photo", async (c) => {
   const id = c.req.param("id");
   const list = await c.env.STORAGE.list({ prefix: `livestock/${id}/` });
@@ -28,15 +23,26 @@ app.get("/api/livestock/:id/photo", async (c) => {
   const latest = list.objects.sort(
     (a, b) => b.uploaded.getTime() - a.uploaded.getTime()
   )[0];
+  const etag = `"${latest.etag}"`;
+  if (c.req.header("if-none-match") === etag) {
+    return new Response(null, { status: 304 });
+  }
   const obj = await c.env.STORAGE.get(latest.key);
   if (!obj) return c.json({ error: "Not found" }, 404);
   return new Response(obj.body, {
     headers: {
       "Content-Type": obj.httpMetadata?.contentType ?? "image/jpeg",
-      "Cache-Control": "public, max-age=86400",
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "ETag": etag,
     },
   });
 });
+
+app.route("/api/livestock", livestockRoutes);
+app.route("/api/sales", salesRoutes);
+app.route("/api/expenses", expensesRoutes);
+app.route("/api/dashboard", dashboardRoutes);
+app.route("/api/users", usersRoutes);
 
 app.get("/", async (c) => {
   const result = await c.env.DB.prepare(
