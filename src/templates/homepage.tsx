@@ -85,9 +85,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; m
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 8px 16px 32px; }
 
 .card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px #0001; transition: transform .15s, box-shadow .15s; position: relative; }
+.card .weight { position: absolute; top: 8px; right: 9px;  z-index: 1; background: rgba(0,0,0,0.8); border-radius: 100%; z-index: 1; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.card .weight .label {
+  font-family: monospace; font-weight: 700; color: white; font-size: 0.72rem;
+}
 .card:active { transform: scale(0.97); }
 @media (hover: hover) { .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px #0002; } }
-.card-num { position: absolute; top: 8px; right: 9px; font-size: 0.62rem; font-weight: 700; color: #cbd5e1; font-family: monospace; z-index: 1; }
+.card-num { position: absolute; top: 8px; left: 9px; font-size: 0.62rem; font-weight: 700; color: #cbd5e1; font-family: monospace; z-index: 1; }
 .card-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
 .card-emoji { font-size: 3rem; text-align: center; padding: 18px 8px 8px; line-height: 1; }
 .card-bar { height: 4px; margin: 0 12px 10px; border-radius: 2px; }
@@ -150,6 +154,11 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
   const statusColor = STATUS_COLOR[l.status] ?? "#6b7280";
   return (
     <div class="card" data-type={l.type} data-status={l.status}>
+      {l.weight_kg ? (
+        <span class="weight">
+          <span className="label">{l.weight_kg}kg</span>
+        </span>
+      ) : null}
       <div class="card-num">#{pad(index + 1)}</div>
       {l.image_url ? (
         <img
@@ -171,7 +180,6 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
           <span class="badge" style={{ background: statusColor }}>
             {statusLabel}
           </span>
-          {l.weight_kg ? <span class="weight">{l.weight_kg}kg</span> : null}
         </div>
         {l.selling_price ? (
           <div class="card-price">{formatRupiah(l.selling_price)}</div>
