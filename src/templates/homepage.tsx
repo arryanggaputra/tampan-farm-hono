@@ -52,8 +52,11 @@ const css = `
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; }
 
 .header { position: sticky; top: 0; z-index: 10; background: #15803d; color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px #0002; }
-.header-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.05rem; }
-.header-brand svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.header-brand { display: flex; align-items: center; gap: 8px; }
+.header-brand svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.header-text { display: flex; flex-direction: column; }
+.header-name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
+.header-sub { font-size: 0.68rem; font-weight: 500; opacity: 0.8; letter-spacing: .02em; }
 .login-btn { background: white; color: #15803d; border: none; padding: 7px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-decoration: none; display: inline-block; }
 
 .stats { background: white; border-bottom: 1px solid #e2e8f0; display: flex; }
@@ -200,7 +203,51 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PeternakTampan — Katalog Ternak</title>
+        <title>Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan, Jawa Timur</title>
+        <meta name="description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim. Pesan via WhatsApp." />
+        <meta name="keywords" content="kambing qurban Pasuruan, kambing aqiqah Pasuruan, jual kambing Pasuruan, kambing kurban Jawa Timur, ternak kambing Pasuruan, kambing Morino, kambing Texel, kambing Jawa, hewan qurban Pasuruan" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Peternak Tampan" />
+        <meta property="og:title" content="Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan" />
+        <meta property="og:description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim." />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="id_ID" />
+        <meta property="og:site_name" content="Peternak Tampan" />
+        <meta property="og:image" content="/logo.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Peternak Tampan — Kambing Qurban & Aqiqah Pasuruan" />
+        <meta name="twitter:description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Harga terjangkau, sehat, siap kirim." />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Peternak Tampan",
+          "description": "Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur",
+          "telephone": "+6281931520239",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Pasuruan",
+            "addressRegion": "Jawa Timur",
+            "addressCountry": "ID"
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Pasuruan" },
+            { "@type": "State", "name": "Jawa Timur" }
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+6281931520239",
+            "contactType": "sales",
+            "availableLanguage": "Indonesian"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Katalog Kambing",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Kambing Qurban" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Kambing Aqiqah" } }
+            ]
+          }
+        }) }} />
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
       <body>
@@ -211,7 +258,10 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
               <path d="M3 16c0-2.2 1.8-4 4-4h10c2.2 0 4 1.8 4 4v2H3v-2z" />
               <path d="M8 10v2M16 10v2" />
             </svg>
-            PeternakTampan
+            <div class="header-text">
+              <span class="header-name">Peternak Tampan</span>
+              <span class="header-sub">Kambing Qurban & Aqiqah · Pasuruan, Jawa Timur</span>
+            </div>
           </div>
         </header>
 
