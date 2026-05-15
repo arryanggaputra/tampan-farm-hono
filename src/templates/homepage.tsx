@@ -323,7 +323,9 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
             <div class="stat-num" style={{ color: "#16a34a" }}>
               {stats.available}
             </div>
-            <div class="stat-label">Tersedia</div>
+            <div class="stat-label" style={{ color: "#16a34a" }}>
+              Tersedia
+            </div>
           </button>
           {/* <button class="stat" data-status="booking" style={{ color: '#d97706' }}>
             <div class="stat-dot" style={{ background: '#d97706' }} />
@@ -335,7 +337,9 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
             <div class="stat-num" style={{ color: "#dc2626" }}>
               {stats.sold}
             </div>
-            <div class="stat-label">Terjual</div>
+            <div class="stat-label" style={{ color: "#dc2626" }}>
+              Terjual
+            </div>
           </button>
         </div>
 
