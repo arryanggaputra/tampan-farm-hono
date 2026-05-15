@@ -123,8 +123,11 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
                 <td className="px-4 py-3 text-gray-600">
                   {item.weight_kg ?? "-"}
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-900">
-                  {formatRupiah(item.purchase_price)}
+                <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900">{formatRupiah(item.purchase_price)}</p>
+                  {item.selling_price && (
+                    <p className="text-xs text-green-700">{formatRupiah(item.selling_price)}</p>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-gray-600">
                   {formatDate(item.purchase_date)}
@@ -225,6 +228,11 @@ export function LivestockTable({ data, onEdit, onSell, onRefresh }: Props) {
                 <p className="text-sm font-bold text-gray-900 mt-1">
                   {formatRupiah(item.purchase_price)}
                 </p>
+                {item.selling_price && (
+                  <p className="text-xs text-green-700 font-medium">
+                    Jual: {formatRupiah(item.selling_price)}
+                  </p>
+                )}
               </div>
             </div>
 
