@@ -67,16 +67,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; m
 .stat:active { background: #f1f5f9; transform: scale(0.93); }
 .stat.active { box-shadow: inset 0 -3px 0 0 currentColor; }
 .stat-dot { width: 8px; height: 8px; border-radius: 50%; transition: transform .15s; }
-.stat.active .stat-dot { transform: scale(1.4); }
-.stat-num { font-size: 1.35rem; font-weight: 800; color: #1e293b; line-height: 1; }
-.stat-label { font-size: 0.62rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
+.stat.active .stat-dot { transform: scale(1.2); }
+.stat-num { font-size: 1.1rem; font-weight: 800; color: #1e293b; line-height: 1; }
+.stat-label { font-size: 0.52rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
 
 .filter-section { background: white; border-bottom: 1px solid #e2e8f0; padding: 10px 16px 12px; }
-.filter-label { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
-.filter-label svg { width: 13px; height: 13px; stroke: #94a3b8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.filter-label { display: flex; align-items: center; gap: 5px; font-size: 0.48rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+.filter-label svg { width: 10px; height: 10px; stroke: #94a3b8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .filter-wrap { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .filter-wrap::-webkit-scrollbar { display: none; }
-.filter-btn { flex-shrink: 0; border: none; background: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, background .15s ease, color .15s ease; min-height: 38px; -webkit-tap-highlight-color: transparent; user-select: none; }
+.filter-btn { flex-shrink: 0; border: none; background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, background .15s ease, color .15s ease; min-height: 20px; -webkit-tap-highlight-color: transparent; user-select: none; }
 .filter-btn:hover { background: #e2e8f0; color: #1e293b; }
 .filter-btn:active { transform: scale(0.93); }
 .filter-btn.active { background: #16a34a; color: white; box-shadow: 0 3px 10px #16a34a50; transform: scale(1); }
@@ -151,10 +151,16 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
   return (
     <div class="card" data-type={l.type} data-status={l.status}>
       <div class="card-num">#{pad(index + 1)}</div>
-      {l.image_url
-        ? <img class="card-img" src={l.image_url} alt={l.name ?? l.type} loading="lazy" />
-        : <div class="card-emoji">{emoji}</div>
-      }
+      {l.image_url ? (
+        <img
+          class="card-img"
+          src={l.image_url}
+          alt={l.name ?? l.type}
+          loading="lazy"
+        />
+      ) : (
+        <div class="card-emoji">{emoji}</div>
+      )}
       <div class="card-bar" style={{ background: typeColor }} />
       <div class="card-body">
         <div class="card-type" style={{ color: typeColor }}>
@@ -170,10 +176,12 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         {l.selling_price ? (
           <div class="card-price">{formatRupiah(l.selling_price)}</div>
         ) : null}
-        {l.status === 'available' || l.status === 'booking' ? (
+        {l.status === "available" || l.status === "booking" ? (
           <a
             class="card-order"
-            href={`https://wa.me/6281931520239?text=Halo%2C+saya+tertarik+dengan+${encodeURIComponent(l.name ?? l.type)}+%23${pad(index + 1)}`}
+            href={`https://wa.me/6281931520239?text=Halo%2C+saya+tertarik+dengan+${encodeURIComponent(
+              l.name ?? l.type
+            )}+%23${pad(index + 1)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -201,52 +209,84 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan, Jawa Timur</title>
-        <meta name="description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim. Pesan via WhatsApp." />
-        <meta name="keywords" content="kambing qurban Pasuruan, kambing aqiqah Pasuruan, jual kambing Pasuruan, kambing kurban Jawa Timur, ternak kambing Pasuruan, kambing Morino, kambing Texel, kambing Jawa, hewan qurban Pasuruan" />
+        <title>
+          Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan, Jawa Timur
+        </title>
+        <meta
+          name="description"
+          content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim. Pesan via WhatsApp."
+        />
+        <meta
+          name="keywords"
+          content="kambing qurban Pasuruan, kambing aqiqah Pasuruan, jual kambing Pasuruan, kambing kurban Jawa Timur, ternak kambing Pasuruan, kambing Morino, kambing Texel, kambing Jawa, hewan qurban Pasuruan"
+        />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Peternak Tampan" />
-        <meta property="og:title" content="Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan" />
-        <meta property="og:description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim." />
+        <meta
+          property="og:title"
+          content="Peternak Tampan — Jual Kambing Qurban & Aqiqah Pasuruan"
+        />
+        <meta
+          property="og:description"
+          content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Tersedia kambing Morino, Texel, dan Jawa. Harga terjangkau, sehat, dan siap kirim."
+        />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="id_ID" />
         <meta property="og:site_name" content="Peternak Tampan" />
         <meta property="og:image" content="/logo.png" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Peternak Tampan — Kambing Qurban & Aqiqah Pasuruan" />
-        <meta name="twitter:description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Harga terjangkau, sehat, siap kirim." />
+        <meta
+          name="twitter:title"
+          content="Peternak Tampan — Kambing Qurban & Aqiqah Pasuruan"
+        />
+        <meta
+          name="twitter:description"
+          content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Harga terjangkau, sehat, siap kirim."
+        />
         <link rel="icon" type="image/png" href="/logo.png" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          "name": "Peternak Tampan",
-          "description": "Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur",
-          "telephone": "+6281931520239",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Pasuruan",
-            "addressRegion": "Jawa Timur",
-            "addressCountry": "ID"
-          },
-          "areaServed": [
-            { "@type": "City", "name": "Pasuruan" },
-            { "@type": "State", "name": "Jawa Timur" }
-          ],
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+6281931520239",
-            "contactType": "sales",
-            "availableLanguage": "Indonesian"
-          },
-          "hasOfferCatalog": {
-            "@type": "OfferCatalog",
-            "name": "Katalog Kambing",
-            "itemListElement": [
-              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Kambing Qurban" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Kambing Aqiqah" } }
-            ]
-          }
-        }) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              name: "Peternak Tampan",
+              description:
+                "Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur",
+              telephone: "+6281931520239",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Pasuruan",
+                addressRegion: "Jawa Timur",
+                addressCountry: "ID",
+              },
+              areaServed: [
+                { "@type": "City", name: "Pasuruan" },
+                { "@type": "State", name: "Jawa Timur" },
+              ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+6281931520239",
+                contactType: "sales",
+                availableLanguage: "Indonesian",
+              },
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "Katalog Kambing",
+                itemListElement: [
+                  {
+                    "@type": "Offer",
+                    itemOffered: { "@type": "Product", name: "Kambing Qurban" },
+                  },
+                  {
+                    "@type": "Offer",
+                    itemOffered: { "@type": "Product", name: "Kambing Aqiqah" },
+                  },
+                ],
+              },
+            }),
+          }}
+        />
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
       <body>
@@ -255,7 +295,9 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
             <img class="header-logo" src="/logo.png" alt="Peternak Tampan" />
             <div class="header-text">
               <span class="header-name">Peternak Tampan</span>
-              <span class="header-sub">Kambing Qurban & Aqiqah · Pasuruan, Jawa Timur</span>
+              <span class="header-sub">
+                Kambing Qurban & Aqiqah · Pasuruan, Jawa Timur
+              </span>
             </div>
           </div>
         </header>
