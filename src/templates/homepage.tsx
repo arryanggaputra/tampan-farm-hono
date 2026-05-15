@@ -49,11 +49,12 @@ function pad(n: number) {
 
 const css = `
 *, *::before, *::after { box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; }
+html { background: #cbd5e1; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0 auto; max-width: 430px; background: #f1f5f9; color: #1e293b; }
 
 .header { position: sticky; top: 0; z-index: 10; background: #15803d; color: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px #0002; }
 .header-brand { display: flex; align-items: center; gap: 8px; }
-.header-brand svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.header-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
 .header-text { display: flex; flex-direction: column; }
 .header-name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
 .header-sub { font-size: 0.68rem; font-weight: 500; opacity: 0.8; letter-spacing: .02em; }
@@ -82,9 +83,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; m
 .filter-btn.active:active { transform: scale(0.93); }
 
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 8px 16px 32px; }
-@media (min-width: 480px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 700px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 12px 20px 40px; } }
-@media (min-width: 1024px) { .grid { grid-template-columns: repeat(5, 1fr); max-width: 1200px; margin: 0 auto; padding: 16px 24px 48px; } }
 
 .card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px #0001; transition: transform .15s, box-shadow .15s; position: relative; }
 .card:active { transform: scale(0.97); }
@@ -217,6 +215,7 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Peternak Tampan — Kambing Qurban & Aqiqah Pasuruan" />
         <meta name="twitter:description" content="Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur. Harga terjangkau, sehat, siap kirim." />
+        <link rel="icon" type="image/png" href="/logo.png" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
@@ -253,11 +252,7 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
       <body>
         <header class="header">
           <div class="header-brand">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 10c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-              <path d="M3 16c0-2.2 1.8-4 4-4h10c2.2 0 4 1.8 4 4v2H3v-2z" />
-              <path d="M8 10v2M16 10v2" />
-            </svg>
+            <img class="header-logo" src="/logo.png" alt="Peternak Tampan" />
             <div class="header-text">
               <span class="header-name">Peternak Tampan</span>
               <span class="header-sub">Kambing Qurban & Aqiqah · Pasuruan, Jawa Timur</span>
