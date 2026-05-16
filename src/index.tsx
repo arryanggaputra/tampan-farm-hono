@@ -89,7 +89,7 @@ app.route("/api/users", usersRoutes);
 
 app.get("/", async (c) => {
   const result = await c.env.DB.prepare(
-    "SELECT id, name, type, weight_kg, status, selling_price, purchase_price, image_url, slug FROM livestock ORDER BY created_at ASC"
+    "SELECT id, name, type, weight_kg, status, selling_price, purchase_price, image_url, slug FROM livestock ORDER BY CASE status WHEN 'available' THEN 0 WHEN 'booking' THEN 1 ELSE 2 END ASC, COALESCE(selling_price, 0) DESC"
   ).all<{
     id: string;
     name: string | null;
