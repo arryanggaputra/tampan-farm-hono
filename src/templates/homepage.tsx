@@ -244,7 +244,7 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="id_ID" />
         <meta property="og:site_name" content="Peternak Tampan" />
-        <meta property="og:image" content="/logo.png" />
+        <meta property="og:image" content="https://peternaktampan.com/logo.png" />
         <meta name="twitter:card" content="summary" />
         <meta
           name="twitter:title"
@@ -261,7 +261,11 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
+              "@id": "https://peternaktampan.com/#business",
               name: "Peternak Tampan",
+              url: "https://peternaktampan.com",
+              logo: "https://peternaktampan.com/logo.png",
+              image: "https://peternaktampan.com/logo.png",
               description:
                 "Jual kambing qurban dan aqiqah berkualitas di Pasuruan, Jawa Timur",
               telephone: "+6281931520239",
@@ -295,6 +299,19 @@ export const Homepage: FC<{ livestock: LivestockRow[] }> = ({ livestock }) => {
                   },
                 ],
               },
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://peternaktampan.com/#website",
+              name: "Peternak Tampan",
+              url: "https://peternaktampan.com",
+              inLanguage: "id-ID",
             }),
           }}
         />

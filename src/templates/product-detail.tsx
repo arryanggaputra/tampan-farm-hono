@@ -120,7 +120,10 @@ export const ProductDetail: FC<{
   const cardNum = pad(index >= 0 ? index + 1 : 1);
   const displayName = l.name ?? l.type;
   const pageTitle = `${displayName} #${cardNum} — Peternak Tampan`;
-  const ogImage = l.image_url ? `/api/livestock/${l.id}/photo` : "/logo.png";
+  const BASE_URL = "https://peternaktampan.com";
+  const ogImage = l.image_url
+    ? `${BASE_URL}/api/livestock/${l.id}/photo`
+    : `${BASE_URL}/logo.png`;
   const canOrder = l.status === "available" || l.status === "booking";
   const pageUrl = `https://peternaktampan.com/ternak/${l.slug ?? l.id}`;
   const waText = encodeURIComponent(
@@ -151,34 +154,65 @@ export const ProductDetail: FC<{
         <meta property="og:locale" content="id_ID" />
         <meta property="og:site_name" content="Peternak Tampan" />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={`/ternak/${l.id}`} />
+        <meta property="og:url" content={pageUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:image" content={ogImage} />
         <link rel="icon" type="image/png" href="/logo.png" />
-        {l.selling_price ? (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Product",
-                name: displayName,
-                description: `Kambing ${l.type} dari Peternak Tampan, Pasuruan`,
-                image: ogImage,
-                offers: {
-                  "@type": "Offer",
-                  price: l.selling_price,
-                  priceCurrency: "IDR",
-                  availability:
-                    l.status === "available"
-                      ? "https://schema.org/InStock"
-                      : "https://schema.org/OutOfStock",
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: displayName,
+              description: `Kambing ${l.type} dari Peternak Tampan, Pasuruan`,
+              image: ogImage,
+              url: pageUrl,
+              ...(l.selling_price
+                ? {
+                    offers: {
+                      "@type": "Offer",
+                      price: l.selling_price,
+                      priceCurrency: "IDR",
+                      url: pageUrl,
+                      availability:
+                        l.status === "available"
+                          ? "https://schema.org/InStock"
+                          : "https://schema.org/OutOfStock",
+                      seller: {
+                        "@type": "Organization",
+                        name: "Peternak Tampan",
+                      },
+                    },
+                  }
+                : {}),
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Beranda",
+                  item: "https://peternaktampan.com",
                 },
-              }),
-            }}
-          />
-        ) : null}
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: displayName,
+                  item: pageUrl,
+                },
+              ],
+            }),
+          }}
+        />
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
       <body>
