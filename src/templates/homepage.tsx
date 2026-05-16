@@ -160,22 +160,26 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         </span>
       ) : null}
       <div class="card-num">#{pad(index + 1)}</div>
-      {l.image_url ? (
-        <img
-          class="card-img"
-          src={l.image_url}
-          alt={l.name ?? l.type}
-          loading="lazy"
-        />
-      ) : (
-        <div class="card-emoji">{emoji}</div>
-      )}
+      <a href={`/ternak/${l.id}`} style={{ display: "block", textDecoration: "none" }}>
+        {l.image_url ? (
+          <img
+            class="card-img"
+            src={l.image_url}
+            alt={l.name ?? l.type}
+            loading="lazy"
+          />
+        ) : (
+          <div class="card-emoji">{emoji}</div>
+        )}
+      </a>
       <div class="card-bar" style={{ background: typeColor }} />
       <div class="card-body">
         <div class="card-type" style={{ color: typeColor }}>
           {l.type}
         </div>
-        <div class="card-name">{l.name ?? "—"}</div>
+        <a href={`/ternak/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+          <div class="card-name">{l.name ?? "—"}</div>
+        </a>
         <div class="card-meta">
           <span class="badge" style={{ background: statusColor }}>
             {statusLabel}

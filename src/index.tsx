@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { html } from "hono/html";
 import { Homepage } from "./templates/homepage";
+import { ProductDetail } from "./templates/product-detail";
 import authRoutes from "./routes/auth";
 import livestockRoutes from "./routes/livestock";
 import salesRoutes from "./routes/sales";
@@ -46,6 +47,38 @@ app.get("/api/livestock/:id/photo", async (c) => {
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
+});
+
+app.get("/ternak/:id", async (c) => {
+  const id = c.req.param("id");
+  const [item, allIds] = await Promise.all([
+    c.env.DB.prepare(
+      "SELECT id, name, type, weight_kg, status, selling_price, image_url, notes FROM livestock WHERE id = ?"
+    )
+      .bind(id)
+      .first<{
+        id: string;
+        name: string | null;
+        type: string;
+        weight_kg: number | null;
+        status: string;
+        selling_price: number | null;
+        image_url: string | null;
+        notes: string | null;
+      }>(),
+    c.env.DB.prepare("SELECT id FROM livestock ORDER BY created_at ASC").all<{
+      id: string;
+    }>(),
+  ]);
+  if (!item)
+    return c.html(
+      `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tidak Ditemukan — Peternak Tampan</title><style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f1f5f9;color:#1e293b;text-align:center;padding:24px}h1{font-size:1.5rem;margin-bottom:8px}p{color:#94a3b8;margin-bottom:24px}a{color:#16a34a;font-weight:700;text-decoration:none}</style></head><body><div style="font-size:3rem">🐑</div><h1>Ternak Tidak Ditemukan</h1><p>Data ternak ini tidak tersedia.</p><a href="/">← Kembali ke Katalog</a></body></html>`,
+      404
+    );
+  const index = allIds.results.findIndex((r) => r.id === id);
+  return c.html(
+    html`<!DOCTYPE html>${<ProductDetail livestock={item} index={index} />}`
+  );
 });
 
 app.route("/api/livestock", livestockRoutes);
