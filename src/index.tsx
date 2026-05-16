@@ -75,7 +75,7 @@ app.get("/ternak/:slug", async (c) => {
       `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tidak Ditemukan — Peternak Tampan</title><style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f1f5f9;color:#1e293b;text-align:center;padding:24px}h1{font-size:1.5rem;margin-bottom:8px}p{color:#94a3b8;margin-bottom:24px}a{color:#16a34a;font-weight:700;text-decoration:none}</style></head><body><div style="font-size:3rem">🐑</div><h1>Ternak Tidak Ditemukan</h1><p>Data ternak ini tidak tersedia.</p><a href="/">← Kembali ke Katalog</a></body></html>`,
       404
     );
-  const index = allIds.results.findIndex((r) => r.id === id);
+  const index = allIds.results.findIndex((r) => r.id === item.id);
   return c.html(
     html`<!DOCTYPE html>${<ProductDetail livestock={item} index={index} />}`
   );
