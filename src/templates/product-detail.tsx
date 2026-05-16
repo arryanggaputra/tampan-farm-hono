@@ -9,6 +9,7 @@ interface LivestockDetailRow {
   selling_price: number | null;
   image_url: string | null;
   notes: string | null;
+  slug: string | null;
 }
 
 const TYPE_EMOJI: Record<string, string> = {
@@ -121,8 +122,9 @@ export const ProductDetail: FC<{
   const pageTitle = `${displayName} #${cardNum} — Peternak Tampan`;
   const ogImage = l.image_url ? `/api/livestock/${l.id}/photo` : "/logo.png";
   const canOrder = l.status === "available" || l.status === "booking";
+  const pageUrl = `https://peternaktampan.com/ternak/${l.slug ?? l.id}`;
   const waText = encodeURIComponent(
-    `Halo, saya tertarik dengan ${displayName} #${cardNum}`
+    `Halo, saya tertarik dengan ${displayName} #${cardNum}\n\n${pageUrl}`
   );
 
   return (

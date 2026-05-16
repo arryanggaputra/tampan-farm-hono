@@ -53,7 +53,7 @@ app.get("/ternak/:slug", async (c) => {
   const slug = c.req.param("slug");
   const [item, allIds] = await Promise.all([
     c.env.DB.prepare(
-      "SELECT id, name, type, weight_kg, status, selling_price, image_url, notes FROM livestock WHERE slug = ? OR id = ? LIMIT 1"
+      "SELECT id, name, type, weight_kg, status, selling_price, image_url, notes, slug FROM livestock WHERE slug = ? OR id = ? LIMIT 1"
     )
       .bind(slug, slug)
       .first<{
@@ -65,6 +65,7 @@ app.get("/ternak/:slug", async (c) => {
         selling_price: number | null;
         image_url: string | null;
         notes: string | null;
+        slug: string | null;
       }>(),
     c.env.DB.prepare("SELECT id FROM livestock ORDER BY created_at ASC").all<{
       id: string;

@@ -192,9 +192,7 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         {l.status === "available" || l.status === "booking" ? (
           <a
             class="card-order"
-            href={`https://wa.me/6281931520239?text=Halo%2C+saya+tertarik+dengan+${encodeURIComponent(
-              l.name ?? l.type
-            )}+%23${pad(index + 1)}`}
+            href={`https://wa.me/6281931520239?text=${encodeURIComponent(`Halo, saya tertarik dengan ${l.name ?? l.type} #${pad(index + 1)}\n\nhttps://peternaktampan.com/ternak/${l.slug ?? l.id}`)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
