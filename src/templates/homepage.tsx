@@ -9,6 +9,7 @@ interface LivestockRow {
   selling_price: number | null;
   purchase_price: number;
   image_url: string | null;
+  slug: string | null;
 }
 
 const TYPE_EMOJI: Record<string, string> = {
@@ -160,7 +161,7 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         </span>
       ) : null}
       <div class="card-num">#{pad(index + 1)}</div>
-      <a href={`/ternak/${l.id}`} style={{ display: "block", textDecoration: "none" }}>
+      <a href={`/ternak/${l.slug ?? l.id}`} style={{ display: "block", textDecoration: "none" }}>
         {l.image_url ? (
           <img
             class="card-img"
@@ -177,7 +178,7 @@ const Card: FC<{ livestock: LivestockRow; index: number }> = ({
         <div class="card-type" style={{ color: typeColor }}>
           {l.type}
         </div>
-        <a href={`/ternak/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+        <a href={`/ternak/${l.slug ?? l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
           <div class="card-name">{l.name ?? "—"}</div>
         </a>
         <div class="card-meta">

@@ -49,13 +49,13 @@ app.get("/api/livestock/:id/photo", async (c) => {
   });
 });
 
-app.get("/ternak/:id", async (c) => {
-  const id = c.req.param("id");
+app.get("/ternak/:slug", async (c) => {
+  const slug = c.req.param("slug");
   const [item, allIds] = await Promise.all([
     c.env.DB.prepare(
-      "SELECT id, name, type, weight_kg, status, selling_price, image_url, notes FROM livestock WHERE id = ?"
+      "SELECT id, name, type, weight_kg, status, selling_price, image_url, notes FROM livestock WHERE slug = ? OR id = ? LIMIT 1"
     )
-      .bind(id)
+      .bind(slug, slug)
       .first<{
         id: string;
         name: string | null;
@@ -89,7 +89,7 @@ app.route("/api/users", usersRoutes);
 
 app.get("/", async (c) => {
   const result = await c.env.DB.prepare(
-    "SELECT id, name, type, weight_kg, status, selling_price, purchase_price, image_url FROM livestock ORDER BY created_at ASC"
+    "SELECT id, name, type, weight_kg, status, selling_price, purchase_price, image_url, slug FROM livestock ORDER BY created_at ASC"
   ).all<{
     id: string;
     name: string | null;
@@ -99,6 +99,7 @@ app.get("/", async (c) => {
     selling_price: number | null;
     purchase_price: number;
     image_url: string | null;
+    slug: string | null;
   }>();
   return c.html(html`<!DOCTYPE html>${<Homepage livestock={result.results} />}`);
 });

@@ -3,6 +3,26 @@ import { authMiddleware } from '../middleware/auth'
 
 type Vars = { user: { sub: string; name: string; email: string } }
 
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+async function generateUniqueSlug(db: D1Database, type: string, name: string | null): Promise<string> {
+  const base = slugify(name ? `${name}-${type}` : type) || slugify(type)
+  let slug = base
+  let i = 2
+  while (true) {
+    const existing = await db.prepare('SELECT id FROM livestock WHERE slug = ?').bind(slug).first()
+    if (!existing) return slug
+    slug = `${base}-${i++}`
+  }
+}
+
 const livestock = new Hono<{ Bindings: CloudflareBindings; Variables: Vars }>()
 
 livestock.use('*', authMiddleware)
@@ -78,6 +98,7 @@ livestock.post('/', async (c) => {
   }
 
   const id = crypto.randomUUID()
+  const slug = await generateUniqueSlug(c.env.DB, type, name)
   let imageUrl: string | null = null
 
   if (imageFile && imageFile.size > 0) {
@@ -90,9 +111,9 @@ livestock.post('/', async (c) => {
   }
 
   await c.env.DB.prepare(
-    `INSERT INTO livestock (id, name, type, weight_kg, purchase_price, selling_price, purchase_date, vendor, status, image_url, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'available', ?, ?)`
-  ).bind(id, name, type, weightKg, purchasePrice, sellingPrice, purchaseDate, vendor, imageUrl, notes).run()
+    `INSERT INTO livestock (id, name, type, weight_kg, purchase_price, selling_price, purchase_date, vendor, status, image_url, notes, slug)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'available', ?, ?, ?)`
+  ).bind(id, name, type, weightKg, purchasePrice, sellingPrice, purchaseDate, vendor, imageUrl, notes, slug).run()
 
   const item = await c.env.DB.prepare('SELECT * FROM livestock WHERE id = ?').bind(id).first()
   return c.json({ data: item }, 201)
