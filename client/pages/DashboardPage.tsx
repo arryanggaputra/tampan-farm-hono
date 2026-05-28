@@ -6,6 +6,9 @@ import {
   PiggyBank,
   Beef,
   Receipt,
+  Banknote,
+  ShieldCheck,
+  ShoppingCart,
 } from "lucide-react";
 import { dashboardApi } from "../lib/api";
 import { formatRupiah } from "../lib/utils";
@@ -34,34 +37,35 @@ export function DashboardPage() {
     );
   }
 
+  const grossProfit = data?.gross_profit ?? 0
+  const netInvestor = data?.net_profit_investor ?? 0
+  const netOperator = data?.net_profit_operator ?? 0
+
   const stats = [
     {
-      title: "Total Modal Keluar",
-      value: formatRupiah(data?.totalModalKeluar ?? 0),
-      icon: Wallet,
-      color: "text-orange-600",
-      bg: "bg-orange-50",
-      sub: `Termasuk biaya operasional ${formatRupiah(
-        data?.totalBiayaOperasional ?? 0
-      )}`,
-    },
-    {
-      title: "Total Penjualan",
-      value: formatRupiah(data?.totalPenjualan ?? 0),
+      title: "Revenue (Lunas)",
+      value: formatRupiah(data?.revenue ?? 0),
       icon: PiggyBank,
       color: "text-blue-600",
       bg: "bg-blue-50",
-      sub: "Akumulasi pembayaran diterima",
+      sub: `Dari ${data?.jumlahTerjual ?? 0} penjualan lunas · harga jual`,
     },
     {
-      title: "Profit / Loss Estimasi",
-      value: formatRupiah(Math.abs(data?.profitLoss ?? 0)),
-      icon: (data?.profitLoss ?? 0) >= 0 ? TrendingUp : TrendingDown,
-      color: (data?.profitLoss ?? 0) >= 0 ? "text-green-600" : "text-red-600",
-      bg: (data?.profitLoss ?? 0) >= 0 ? "bg-green-50" : "bg-red-50",
-      sub: (data?.profitLoss ?? 0) >= 0 ? "Profit" : "Rugi",
-      valueColor:
-        (data?.profitLoss ?? 0) >= 0 ? "text-green-700" : "text-red-700",
+      title: "COGS (Hewan Terjual)",
+      value: formatRupiah(data?.cogs ?? 0),
+      icon: ShoppingCart,
+      color: "text-orange-600",
+      bg: "bg-orange-50",
+      sub: "Harga beli hewan yang sudah terjual",
+    },
+    {
+      title: "Gross Profit",
+      value: formatRupiah(Math.abs(grossProfit)),
+      icon: grossProfit >= 0 ? TrendingUp : TrendingDown,
+      color: grossProfit >= 0 ? "text-emerald-600" : "text-red-600",
+      bg: grossProfit >= 0 ? "bg-emerald-50" : "bg-red-50",
+      sub: "Revenue − COGS",
+      valueColor: grossProfit >= 0 ? "text-emerald-700" : "text-red-700",
     },
     {
       title: "Hewan Tersedia",
@@ -72,13 +76,46 @@ export function DashboardPage() {
       sub: "Status: Tersedia di kandang",
     },
     {
-      title: "Untung dari Penjualan",
-      value: formatRupiah(Math.abs(data?.keuntunganKotorTerjual ?? 0)),
-      icon: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? TrendingUp : TrendingDown,
-      color: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "text-emerald-600" : "text-red-600",
-      bg: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "bg-emerald-50" : "bg-red-50",
-      sub: `Dari ${data?.jumlahTerjual ?? 0} ekor terjual · harga jual − harga beli`,
-      valueColor: (data?.keuntunganKotorTerjual ?? 0) >= 0 ? "text-emerald-700" : "text-red-700",
+      title: "Beban Investor",
+      value: formatRupiah(data?.expense_investor ?? 0),
+      icon: Wallet,
+      color: "text-teal-600",
+      bg: "bg-teal-50",
+      sub: "Total biaya dari kantong investor",
+    },
+    {
+      title: "Beban Operator",
+      value: formatRupiah(data?.expense_operator ?? 0),
+      icon: Receipt,
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+      sub: "Total biaya dari kantong operator / peternak",
+    },
+    {
+      title: "Net Profit Investor",
+      value: formatRupiah(Math.abs(netInvestor)),
+      icon: netInvestor >= 0 ? ShieldCheck : TrendingDown,
+      color: netInvestor >= 0 ? "text-green-600" : "text-red-600",
+      bg: netInvestor >= 0 ? "bg-green-50" : "bg-red-50",
+      sub: "Gross Profit − Beban Investor",
+      valueColor: netInvestor >= 0 ? "text-green-700" : "text-red-700",
+    },
+    {
+      title: "Net Profit Operator",
+      value: formatRupiah(Math.abs(netOperator)),
+      icon: netOperator >= 0 ? ShieldCheck : TrendingDown,
+      color: netOperator >= 0 ? "text-violet-600" : "text-red-600",
+      bg: netOperator >= 0 ? "bg-violet-50" : "bg-red-50",
+      sub: "Gross Profit − Beban Operator",
+      valueColor: netOperator >= 0 ? "text-violet-700" : "text-red-700",
+    },
+    {
+      title: "Modal Investor",
+      value: formatRupiah(data?.totalInvestorCapital ?? 0),
+      icon: Banknote,
+      color: "text-teal-600",
+      bg: "bg-teal-50",
+      sub: "Total harga beli hewan dari dana investor",
     },
   ];
 
@@ -91,7 +128,7 @@ export function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {stats.map(
           ({ title, value, icon: Icon, color, bg, sub, valueColor }) => (
             <Card key={title}>
@@ -104,11 +141,7 @@ export function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p
-                  className={`text-2xl font-bold ${
-                    valueColor ?? "text-gray-900"
-                  }`}
-                >
+                <p className={`text-2xl font-bold ${valueColor ?? "text-gray-900"}`}>
                   {value}
                 </p>
                 <p className="mt-1 text-xs text-gray-400">{sub}</p>
@@ -118,7 +151,6 @@ export function DashboardPage() {
         )}
       </div>
 
-      {/* Quick tips */}
       <Card>
         <CardContent className="pt-5">
           <h2 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
@@ -126,20 +158,13 @@ export function DashboardPage() {
             Catatan Penting
           </h2>
           <ul className="space-y-1.5 text-sm text-gray-500">
-            <li>
-              • Profit/loss dihitung dari: Penjualan − Modal Hewan (semua) − Biaya Operasional
-            </li>
-            <li>
-              • <strong>Untung Penjualan</strong> = harga jual − harga beli, hanya untuk hewan yang sudah terjual
-            </li>
-            <li>
-              • Hanya pembayaran yang sudah diterima (DP + Lunas) yang masuk
-              total penjualan
-            </li>
-            <li>
-              • Gunakan tab <strong>Inventaris</strong> untuk menambah atau
-              menjual hewan
-            </li>
+            <li>• <strong>Revenue</strong> = harga jual dari penjualan berstatus <em>lunas</em> saja</li>
+            <li>• <strong>COGS</strong> = harga beli hewan yang sudah berstatus terjual</li>
+            <li>• <strong>Gross Profit</strong> = Revenue − COGS (selalu dihitung ulang, tidak disimpan)</li>
+            <li>• <strong>Beban Investor / Operator</strong> = total porsi biaya per pihak dari tabel biaya operasional</li>
+            <li>• <strong>Net Profit Investor</strong> = Gross Profit − Beban Investor</li>
+            <li>• <strong>Net Profit Operator</strong> = Gross Profit − Beban Operator</li>
+            <li>• Semua angka profit bersifat <em>derived</em> — tidak ada yang disimpan di database</li>
           </ul>
         </CardContent>
       </Card>

@@ -113,9 +113,14 @@ export function ExpensesPage() {
                     {formatDate(expense.expense_date)}
                   </p>
                 </div>
-                <p className="text-sm font-bold text-gray-900 shrink-0">
-                  {formatRupiah(expense.cost)}
-                </p>
+                <div className="text-right shrink-0 space-y-0.5">
+                  <p className="text-sm font-bold text-gray-900">
+                    {formatRupiah(expense.cost)}
+                  </p>
+                  <p className="text-[10px] text-teal-600">
+                    Inv {formatRupiah(expense.share_investor_amount)} · Op {formatRupiah(expense.share_operator_amount)}
+                  </p>
+                </div>
                 <div className="flex gap-1 shrink-0">
                   <Button
                     variant="ghost"

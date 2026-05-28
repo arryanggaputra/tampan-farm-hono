@@ -19,6 +19,7 @@ expenses.post("/", async (c) => {
 
   let category: string, description: string, cost: number, expense_date: string;
   let imageFile: File | null = null;
+  let shareInvestorAmount: number;
 
   if (contentType.includes("multipart/form-data")) {
     const form = await c.req.formData();
@@ -27,17 +28,21 @@ expenses.post("/", async (c) => {
     cost = Number(form.get("cost"));
     expense_date = form.get("expense_date") as string;
     imageFile = form.get("photo") as File | null;
+    const siaVal = form.get("share_investor_amount");
+    shareInvestorAmount = siaVal !== null ? Number(siaVal) : cost;
   } else {
     const body = await c.req.json<{
       category: string;
       description: string;
       cost: number;
       expense_date: string;
+      share_investor_amount?: number;
     }>();
     category = body.category;
     description = body.description;
     cost = body.cost;
     expense_date = body.expense_date;
+    shareInvestorAmount = body.share_investor_amount ?? cost;
   }
 
   if (!category || !description || !cost || !expense_date) {
@@ -46,6 +51,8 @@ expenses.post("/", async (c) => {
       400
     );
   }
+
+  const shareOperatorAmount = cost - shareInvestorAmount;
 
   const id = crypto.randomUUID();
   let imageUrl: string | null = null;
@@ -60,9 +67,9 @@ expenses.post("/", async (c) => {
   }
 
   await c.env.DB.prepare(
-    "INSERT INTO expenses (id, category, description, cost, expense_date, image_url) VALUES (?, ?, ?, ?, ?, ?)"
+    "INSERT INTO expenses (id, category, description, cost, expense_date, image_url, share_investor_amount, share_operator_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
   )
-    .bind(id, category, description, cost, expense_date, imageUrl)
+    .bind(id, category, description, cost, expense_date, imageUrl, shareInvestorAmount, shareOperatorAmount)
     .run();
 
   const item = await c.env.DB.prepare("SELECT * FROM expenses WHERE id = ?")
@@ -74,10 +81,10 @@ expenses.post("/", async (c) => {
 expenses.patch("/:id", async (c) => {
   const id = c.req.param("id");
   const existing = await c.env.DB.prepare(
-    "SELECT id FROM expenses WHERE id = ?"
+    "SELECT id, cost FROM expenses WHERE id = ?"
   )
     .bind(id)
-    .first();
+    .first<{ id: string; cost: number }>();
   if (!existing) return c.json({ error: "Not found" }, 404);
 
   const body = await c.req.json<
@@ -86,6 +93,7 @@ expenses.patch("/:id", async (c) => {
       description: string;
       cost: number;
       expense_date: string;
+      share_investor_amount: number;
     }>
   >();
 
@@ -100,13 +108,25 @@ expenses.patch("/:id", async (c) => {
     fields.push("description = ?");
     values.push(body.description);
   }
+
+  const newCost = body.cost !== undefined ? body.cost : existing.cost;
   if (body.cost !== undefined) {
     fields.push("cost = ?");
     values.push(body.cost);
   }
+
   if (body.expense_date !== undefined) {
     fields.push("expense_date = ?");
     values.push(body.expense_date);
+  }
+
+  if (body.share_investor_amount !== undefined || body.cost !== undefined) {
+    const investorAmt = body.share_investor_amount ?? newCost;
+    const operatorAmt = newCost - investorAmt;
+    fields.push("share_investor_amount = ?");
+    values.push(investorAmt);
+    fields.push("share_operator_amount = ?");
+    values.push(operatorAmt);
   }
 
   if (fields.length === 0) return c.json({ error: "No fields to update" }, 400);

@@ -2,6 +2,7 @@ export type LivestockStatus = "available" | "sold" | "booking" | "dead";
 export type PaymentStatus = "dp" | "lunas";
 export type ExpenseCategory = "kandang" | "pakan" | "obat" | "upah" | "lainnya";
 export type LivestockType = "Morino" | "Texel" | "Jawa" | "Lainnya";
+export type SourceOfFunds = "INVESTOR_CASH" | "ROLLING_PROFIT";
 
 export interface User {
   id: string;
@@ -21,6 +22,8 @@ export interface Livestock {
   status: LivestockStatus;
   image_url: string | null;
   notes: string | null;
+  source_of_funds: SourceOfFunds;
+  reinvested_from_sale_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -45,17 +48,24 @@ export interface Expense {
   category: ExpenseCategory;
   description: string;
   cost: number;
+  share_investor_amount: number;
+  share_operator_amount: number;
   expense_date: string;
   image_url: string | null;
   created_at: string;
 }
 
 export interface DashboardStats {
-  totalModalKeluar: number;
-  totalPenjualan: number;
-  profitLoss: number;
+  revenue: number;
+  cogs: number;
+  gross_profit: number;
+  expense_investor: number;
+  expense_operator: number;
+  net_profit_investor: number;
+  net_profit_operator: number;
   jumlahHewanTersedia: number;
-  totalBiayaOperasional: number;
+  jumlahTerjual: number;
+  totalInvestorCapital: number;
 }
 
 export interface ApiResponse<T> {

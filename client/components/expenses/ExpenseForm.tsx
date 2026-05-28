@@ -1,4 +1,4 @@
-import { useState, FormEvent, useRef } from 'react'
+import { useState, useEffect, FormEvent, useRef } from 'react'
 import { Dialog } from '../ui/Dialog'
 import { Button } from '../ui/Button'
 import { Input, Field } from '../ui/Input'
@@ -7,7 +7,7 @@ import { expensesApi } from '../../lib/api'
 import { useToast } from '../ui/Toast'
 import { todayISO } from '../../lib/utils'
 import { X, ImageIcon } from 'lucide-react'
-import type { Expense, ExpenseCategory } from '../../../src/types'
+import type { Expense } from '../../../src/types'
 
 interface Props {
   open: boolean
@@ -22,6 +22,22 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [removePhoto, setRemovePhoto] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [category, setCategory] = useState<string>(editing?.category ?? 'pakan')
+  const [cost, setCost] = useState<number>(editing?.cost ?? 0)
+  const [shareInvestorAmount, setShareInvestorAmount] = useState<number>(
+    editing ? editing.share_investor_amount : (editing?.cost ?? 0)
+  )
+
+  useEffect(() => {
+    setCategory(editing?.category ?? 'pakan')
+    const c = editing?.cost ?? 0
+    setCost(c)
+    setShareInvestorAmount(editing ? editing.share_investor_amount : c)
+  }, [editing?.id])
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value)
+  }
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -58,6 +74,7 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
           description: form.get('description'),
           cost: Number(form.get('cost')),
           expense_date: form.get('expense_date'),
+          share_investor_amount: shareInvestorAmount,
         }
         if (removePhoto) {
           body.image_url = null
@@ -71,6 +88,7 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
         }
         toast('Biaya berhasil diupdate')
       } else {
+        form.set('share_investor_amount', String(shareInvestorAmount))
         await expensesApi.create(form)
         toast('Biaya berhasil dicatat')
       }
@@ -88,7 +106,7 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Kategori" required>
-            <Select name="category" defaultValue={editing?.category ?? 'pakan'} required>
+            <Select name="category" value={category} onChange={handleCategoryChange} required>
               <option value="kandang">Kandang</option>
               <option value="pakan">Pakan / Konsentrat</option>
               <option value="obat">Obat-obatan</option>
@@ -96,14 +114,44 @@ export function ExpenseForm({ open, onClose, onSuccess, editing }: Props) {
               <option value="lainnya">Lainnya</option>
             </Select>
           </Field>
-          <Field label="Biaya (Rp)" required>
+          <Field label="Biaya Total (Rp)" required>
             <Input
               name="cost"
               type="number"
               min="0"
-              defaultValue={editing?.cost ?? ''}
+              value={cost === 0 ? '' : cost}
+              onChange={(e) => {
+                const val = Number(e.target.value)
+                setCost(val)
+                setShareInvestorAmount(val)
+              }}
               placeholder="500000"
               required
+            />
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Bagian Investor (Rp)" required>
+            <Input
+              type="number"
+              min="0"
+              max={cost}
+              value={shareInvestorAmount === 0 ? '' : shareInvestorAmount}
+              onChange={(e) => {
+                const val = Math.min(Number(e.target.value), cost)
+                setShareInvestorAmount(val)
+              }}
+              placeholder="500000"
+              required
+            />
+          </Field>
+          <Field label="Bagian Operator (Rp)">
+            <Input
+              type="number"
+              value={cost - shareInvestorAmount}
+              readOnly
+              className="bg-gray-50 text-gray-500"
             />
           </Field>
         </div>
