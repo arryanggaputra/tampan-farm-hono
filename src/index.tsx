@@ -9,6 +9,8 @@ import salesRoutes from "./routes/sales";
 import expensesRoutes from "./routes/expenses";
 import dashboardRoutes from "./routes/dashboard";
 import usersRoutes from "./routes/users";
+import settingsRoutes from "./routes/settings";
+import bagiHasilRoutes from "./routes/bagi_hasil";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -87,6 +89,8 @@ app.route("/api/sales", salesRoutes);
 app.route("/api/expenses", expensesRoutes);
 app.route("/api/dashboard", dashboardRoutes);
 app.route("/api/users", usersRoutes);
+app.route("/api/settings", settingsRoutes);
+app.route("/api/bagi-hasil", bagiHasilRoutes);
 
 app.get("/", async (c) => {
   const result = await c.env.DB.prepare(

@@ -4,6 +4,7 @@ import type {
   Sale,
   Expense,
   DashboardStats,
+  BagiHasilMember,
   ApiResponse,
   LivestockStatus,
   PaymentStatus,
@@ -141,6 +142,33 @@ export const salesApi = {
     request<ApiResponse<{ ok: boolean }>>(`/api/sales/${id}`, {
       method: "DELETE",
     }),
+};
+
+// Settings
+export const settingsApi = {
+  get: () => request<ApiResponse<{ profit_split_count: number }>>('/api/settings'),
+  update: (data: { profit_split_count: number }) =>
+    request<ApiResponse<{ profit_split_count: number }>>('/api/settings', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+};
+
+// Bagi Hasil Members
+export const bagiHasilApi = {
+  list: () => request<ApiResponse<BagiHasilMember[]>>('/api/bagi-hasil'),
+  create: (data: { name: string; percentage: number }) =>
+    request<ApiResponse<BagiHasilMember>>('/api/bagi-hasil', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (id: string, data: Partial<{ name: string; percentage: number }>) =>
+    request<ApiResponse<BagiHasilMember>>(`/api/bagi-hasil/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  delete: (id: string) =>
+    request<ApiResponse<{ ok: boolean }>>(`/api/bagi-hasil/${id}`, { method: 'DELETE' }),
 };
 
 // Expenses

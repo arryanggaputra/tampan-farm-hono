@@ -55,14 +55,27 @@ export interface Expense {
   created_at: string;
 }
 
+export interface BagiHasilMember {
+  id: string;
+  name: string;
+  percentage: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface BagiHasilMemberWithShare extends BagiHasilMember {
+  share_amount: number;
+}
+
 export interface DashboardStats {
   revenue: number;
   cogs: number;
   gross_profit: number;
   expense_investor: number;
   expense_operator: number;
-  net_profit_investor: number;
-  net_profit_operator: number;
+  total_expenses: number;
+  net_profit_total: number;
+  members: BagiHasilMemberWithShare[];
   jumlahHewanTersedia: number;
   jumlahTerjual: number;
   totalInvestorCapital: number;
